@@ -147,7 +147,31 @@ class _SummaryScreenState extends State<SummaryScreen> {
           );
         },
       ),
+      // 1. 이 부분을 추가합니다. (body: ... , 뒤에)
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // 2. 버튼이 눌렸을 때 실행할 로직 (아래 2단계에서 채울 것)
+          _addHealthData();
+        },
+        child: const Icon(Icons.add), // 버튼 아이콘
+      ),
     );
+  }
+  // 3. _addHealthData 메소드를 build 메소드 *밖에* 추가합니다.
+  //    (React에서 렌더 함수 밖에 헬퍼 함수를 빼는 것과 같음)
+  void _addHealthData() {
+    // 4. 이것이 바로 React의 setHealthData(...) 입니다!
+    setState(() {
+      // 5. setState() 콜백 함수 '안'에서 상태(state)를 직접 변경합니다.
+      //    (React의 불변성과 달리, Dart는 리스트를 직접 '수정(mutate)'해도 됨)
+      healthData.add({
+        'title': '새 항목',
+        'value': '${healthData.length + 1} 번째',
+        'time': '방금',
+        'icon': Icons.new_releases,
+        'color': Colors.green,
+      });
+    });
   }
 }
 
