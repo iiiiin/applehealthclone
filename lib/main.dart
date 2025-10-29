@@ -50,11 +50,98 @@ class SummaryScreen extends StatelessWidget {
       appBar: AppBar(
         // const: 이 텍스트는 절대 변하지 않으므로 const 처리 (성능 향상)
         title: const Text('요약'),
+        backgroundColor: Colors.grey[100], // 애플 건강과 유사한 배경색
+        // body를 GridView.builder로 변경합니다.
+        // GridView.builder는 RN의 FlatList와 거의 같습니다.
+        // 화면에 보이는 것만 그리는 효율적인 방식입니다.
       ),
       // 11. 화면의 본문 영역
-      body: Center(
-        // 12. 우선은 '여기에 격자가 들어온다'는 텍스트만 띄웁니다.
-        child: const Text('여기에 GridView가 들어올 예정입니다.'),
+      body: GridView.builder(
+        padding: const EdgeInsets.all(16.0), // 그리드 전체에 패딩
+        
+        // 1. 그리드의 레이아웃을 정의하는 핵심 부분
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,    // 한 줄에 2개의 열
+          mainAxisSpacing: 16.0,  // 수직 간격
+          crossAxisSpacing: 16.0, // 수평 간격
+          childAspectRatio: 1.0,  // 아이템의 가로/세로 비율 (1.0 = 정사각형)
+        ), 
+        
+        // 2. 총 몇 개의 아이템을 만들지? (우선 6개로 하드코딩)
+        itemCount: 6,
+        
+        // 3. 각 아이템(셀)을 어떻게 그릴지?
+        itemBuilder: (BuildContext context, int index) {
+          // 'HealthCategoryCard'라는 위젯을 반환합니다.
+          // (아래 2단계에서 이 위젯을 만들 겁니다.)
+          // 지금은 임시로 Card를 넣습니다.
+          return const HealthCategoryCard();
+        },
+      ),
+    );
+  }
+}
+
+// 2단계: 각 그리드 셀에 들어갈 위젯을 분리합니다.
+// React에서 <HealthCategoryCard /> 컴포넌트를 분리하는 것과 같습니다.
+// const 생성자를 사용해 리빌드를 방지합니다. (성능 최적화)
+class HealthCategoryCard extends StatelessWidget {
+  const HealthCategoryCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // Card 위젯은 RN의 <View style={{ shadow... }}>와 비슷합니다.
+    // 적당한 그림자와 둥근 모서리를 제공합니다.
+    return Card(
+      elevation: 2.0, // 그림자 농도
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0), // 모서리 둥글기
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0), // 카드 내부 여백
+        
+        // Column은 RN의 <View style={{ flexDirection: 'column' }}>
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
+          mainAxisAlignment: MainAxisAlignment.spaceBetween, // 위아래로 공간 분배
+          children: [
+            // 1. 아이콘 (지금은 임시 아이콘)
+            // const: 이 아이콘은 절대 변하지 않으므로!
+            const Icon(
+              Icons.favorite, // '심박수' 아이콘 (임시)
+              color: Colors.red,
+              size: 32.0,
+            ),
+            
+            // 2. 데이터 (지금은 임시 텍스트)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  '심박수',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.0,
+                  ),
+                ),
+                const Text(
+                  '75 BPM',
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.w900, // 가장 두껍게
+                  ),
+                ),
+                const Text(
+                  '방금 전',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 14.0,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
