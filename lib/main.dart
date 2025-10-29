@@ -1,122 +1,61 @@
+// main.dart
+
+// 1. Flutter의 머티리얼 디자인 UI 위젯을 가져옵니다.
+// React의 'import React from 'react';'와 비슷합니다.
 import 'package:flutter/material.dart';
 
+// 2. 앱의 시작점입니다. (index.tsx의 ReactDOM.render와 유사)
 void main() {
+  // 3. 'MyApp' 위젯(컴포넌트)을 실행하라는 명령입니다.
   runApp(const MyApp());
 }
 
+// 4. 앱의 최상위 루트 위젯입니다. (App.tsx와 동일)
+// 'const'는 성능을 위해 붙이며, 'StatelessWidget'은 React의
+// state가 없는 함수형 컴포넌트와 같습니다.
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // 5. UI를 그리는 메소드입니다. (React의 render() 함수와 동일)
   @override
   Widget build(BuildContext context) {
+    // 6. 'MaterialApp'은 앱 전체의 테마, 라우팅 등을 관리하는
+    //    최상위 뼈대입니다. (React Native의 <NavigationContainer>와 유사)
     return MaterialApp(
-      title: 'Flutter Demo',
+      // (지금은 이 2개만 알면 됩니다)
+      title: 'Apple Health Clone',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        // 앱의 기본 색상 테마를 설정합니다.
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      // 7. 앱이 처음 켜졌을 때 보여줄 '홈' 화면입니다.
+      //    'SummaryScreen'이라는 위젯을 홈으로 지정합니다.
+      home: const SummaryScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+// 8. '요약' 탭에 해당하는 실제 화면 위젯입니다.
+//    (지금은 한 파일에 있지만, 나중엔 별도 파일로 분리할 겁니다.)
+class SummaryScreen extends StatelessWidget {
+  const SummaryScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    // 9. 'Scaffold'는 화면의 기본 구조(상단바, 본문 등)를 제공합니다.
+    //    RN의 <SafeAreaView> + 헤더 + 본문 구조와 비슷합니다.
     return Scaffold(
+      // 10. 상단 앱 바 (헤더)
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        // const: 이 텍스트는 절대 변하지 않으므로 const 처리 (성능 향상)
+        title: const Text('요약'),
       ),
+      // 11. 화면의 본문 영역
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
+        // 12. 우선은 '여기에 격자가 들어온다'는 텍스트만 띄웁니다.
+        child: const Text('여기에 GridView가 들어올 예정입니다.'),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
