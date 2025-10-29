@@ -43,8 +43,52 @@ class SummaryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 9. 'Scaffold'는 화면의 기본 구조(상단바, 본문 등)를 제공합니다.
-    //    RN의 <SafeAreaView> + 헤더 + 본문 구조와 비슷합니다.
+    // 1. 임시 데이터 목록을 만듭니다. (React의 state나 const 변수와 같음)
+    // Dart에서 리스트는 [], 맵(객체)은 {} 입니다.
+    final List<Map<String, dynamic>> healthData = [
+      {
+        'title': '심박수',
+        'value': '75 BPM',
+        'time': '방금 전',
+        'icon': Icons.favorite, // Icon 데이터
+        'color': Colors.red,
+      },
+      {
+        'title': '걸음',
+        'value': '4,820',
+        'time': '오늘',
+        'icon': Icons.directions_walk,
+        'color': Colors.orange,
+      },
+      {
+        'title': '수면',
+        'value': '6시간 45분',
+        'time': '어젯밤',
+        'icon': Icons.nightlight_round,
+        'color': Colors.purple,
+      },
+      {
+        'title': '체중',
+        'value': '70.5 kg',
+        'time': '오전 8:00',
+        'icon': Icons.monitor_weight,
+        'color': Colors.blue,
+      },
+      {
+        'title': '활동 에너지',
+        'value': '350 kcal',
+        'time': '오늘',
+        'icon': Icons.local_fire_department,
+        'color': Colors.redAccent,
+      },
+      {
+        'title': '물',
+        'value': '1.2 L',
+        'time': '오늘',
+        'icon': Icons.water_drop,
+        'color': Colors.lightBlue,
+      },
+    ];
     return Scaffold(
       // 10. 상단 앱 바 (헤더)
       appBar: AppBar(
@@ -67,15 +111,23 @@ class SummaryScreen extends StatelessWidget {
           childAspectRatio: 1.0,  // 아이템의 가로/세로 비율 (1.0 = 정사각형)
         ), 
         
-        // 2. 총 몇 개의 아이템을 만들지? (우선 6개로 하드코딩)
-        itemCount: 6,
+        // 2. itemCount를 하드코딩된 6 대신 데이터 리스트의 길이로 변경
+        itemCount: healthData.length,
         
-        // 3. 각 아이템(셀)을 어떻게 그릴지?
+        // 3. itemBuilder를 수정합니다.
         itemBuilder: (BuildContext context, int index) {
-          // 'HealthCategoryCard'라는 위젯을 반환합니다.
-          // (아래 2단계에서 이 위젯을 만들 겁니다.)
-          // 지금은 임시로 Card를 넣습니다.
-          return const HealthCategoryCard();
+          // 4. 현재 index에 맞는 데이터를 가져옵니다.
+          final data = healthData[index];
+
+          // 5. 에러가 났던 HealthCategoryCard에 'props'를 전달합니다.
+          //    (const는 더 이상 붙일 수 없습니다. 데이터가 동적이기 때문)
+          return HealthCategoryCard(
+            title: data['title'],
+            value: data['value'],
+            time: data['time'],
+            icon: data['icon'],
+            iconColor: data['color'],
+          );
         },
       ),
     );
@@ -86,7 +138,25 @@ class SummaryScreen extends StatelessWidget {
 // React에서 <HealthCategoryCard /> 컴포넌트를 분리하는 것과 같습니다.
 // const 생성자를 사용해 리빌드를 방지합니다. (성능 최적화)
 class HealthCategoryCard extends StatelessWidget {
-  const HealthCategoryCard({super.key});
+  // 1. 'props'를 선언합니다.
+  // Dart에서는 'final' 키워드를 사용해 불변(immutable) props를 만듭니다.
+  final String title;
+  final String value;
+  final String time;
+  final IconData icon; // Icon 데이터를 직접 받습니다 (예: Icons.favorite)
+  final Color iconColor;
+
+  // 2. 생성자(constructor)를 수정합니다.
+  // this.title은 React의 props.title과 같습니다.
+  // {super.key} 뒤에 콤마(,)를 찍고 받아올 props를 정의합니다.
+  const HealthCategoryCard({
+    super.key,
+    required this.title, // required: 이 prop은 필수라는 의미
+    required this.value,
+    required this.time,
+    required this.icon,
+    required this.iconColor,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -105,35 +175,34 @@ class HealthCategoryCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start, // 왼쪽 정렬
           mainAxisAlignment: MainAxisAlignment.spaceBetween, // 위아래로 공간 분배
           children: [
-            // 1. 아이콘 (지금은 임시 아이콘)
-            // const: 이 아이콘은 절대 변하지 않으므로!
-            const Icon(
-              Icons.favorite, // '심박수' 아이콘 (임시)
-              color: Colors.red,
+            // 3. 하드코딩된 Icon을 'props'로 교체합니다.
+            Icon(
+              icon, // Icons.favorite 대신 props로 받은 icon
+              color: iconColor, // Colors.red 대신 props로 받은 iconColor
               size: 32.0,
             ),
             
-            // 2. 데이터 (지금은 임시 텍스트)
+            // 4. 하드코딩된 Text들을 'props'로 교체합니다.
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  '심박수',
-                  style: TextStyle(
+                Text(
+                  title, // '심박수' 대신 props.title
+                  style: const TextStyle( // Text도 const 가능
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
                   ),
                 ),
-                const Text(
-                  '75 BPM',
-                  style: TextStyle(
+                Text(
+                  value, // '75 BPM' 대신 props.value
+                  style: const TextStyle( // Text도 const 가능
                     fontSize: 20.0,
-                    fontWeight: FontWeight.w900, // 가장 두껍게
+                    fontWeight: FontWeight.w900,
                   ),
                 ),
-                const Text(
-                  '방금 전',
-                  style: TextStyle(
+                Text(
+                  time, // '방금 전' 대신 props.time
+                  style: const TextStyle( // Text도 const 가능
                     color: Colors.grey,
                     fontSize: 14.0,
                   ),
