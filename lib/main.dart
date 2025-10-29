@@ -38,19 +38,36 @@ class MyApp extends StatelessWidget {
 
 // 8. '요약' 탭에 해당하는 실제 화면 위젯입니다.
 //    (지금은 한 파일에 있지만, 나중엔 별도 파일로 분리할 겁니다.)
-class SummaryScreen extends StatelessWidget {
+class SummaryScreen extends StatefulWidget {
   const SummaryScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    // 1. 임시 데이터 목록을 만듭니다. (React의 state나 const 변수와 같음)
-    // Dart에서 리스트는 [], 맵(객체)은 {} 입니다.
-    final List<Map<String, dynamic>> healthData = [
+  State<SummaryScreen> createState() => _SummaryScreenState();
+}
+
+class _SummaryScreenState extends State<SummaryScreen> {
+  // 4. '상태' 선언: build() 밖에 데이터를 선언합니다!
+  // React의 const [healthData, setHealthData] = useState([...]); 와 동일.
+  // 이 데이터를 'state'라고 부릅니다.
+  // 'final'을 지워야 나중에 데이터를 변경할 수 있습니다.
+  List<Map<String, dynamic>> healthData = []; // <--- 1. 빈 리스트로 선언
+
+  // 5. 'initState()' 메소드를 추가합니다.
+  // 이것은 React의 useEffect(..., []) 와 100% 같습니다.
+  // 위젯이 '처음 생성될 때' 딱 한 번 호출됩니다.
+  // API 호출, 데이터 초기화 등은 여기서 합니다.
+  @override
+  void initState() {
+    super.initState(); // 부모 initState() 호출 (필수)
+    
+    // 6. 여기서 '상태'를 초기화합니다.
+    // (지금은 하드코딩, 나중엔 여기서 API 통신)
+    healthData = [
       {
         'title': '심박수',
         'value': '75 BPM',
         'time': '방금 전',
-        'icon': Icons.favorite, // Icon 데이터
+        'icon': Icons.favorite,
         'color': Colors.red,
       },
       {
@@ -89,6 +106,11 @@ class SummaryScreen extends StatelessWidget {
         'color': Colors.lightBlue,
       },
     ];
+  }
+  @override
+  Widget build(BuildContext context) {
+    // 8. build() 안에 있던 'healthData' 리스트는 밖으로 나갔으므로 삭제!
+
     return Scaffold(
       // 10. 상단 앱 바 (헤더)
       appBar: AppBar(
@@ -111,16 +133,11 @@ class SummaryScreen extends StatelessWidget {
           childAspectRatio: 1.0,  // 아이템의 가로/세로 비율 (1.0 = 정사각형)
         ), 
         
-        // 2. itemCount를 하드코딩된 6 대신 데이터 리스트의 길이로 변경
+        // 9. itemCount와 itemBuilder는 이제 build 밖의 '상태' 변수를 바라봅니다.
         itemCount: healthData.length,
-        
-        // 3. itemBuilder를 수정합니다.
         itemBuilder: (BuildContext context, int index) {
-          // 4. 현재 index에 맞는 데이터를 가져옵니다.
           final data = healthData[index];
 
-          // 5. 에러가 났던 HealthCategoryCard에 'props'를 전달합니다.
-          //    (const는 더 이상 붙일 수 없습니다. 데이터가 동적이기 때문)
           return HealthCategoryCard(
             title: data['title'],
             value: data['value'],
