@@ -1,15 +1,22 @@
 // lib/main.dart
 
 import 'package:flutter/material.dart';
-
-// 1. [중요] 방금 분리한 SummaryScreen을 import 합니다.
-//    (React에서 'import SummaryScreen from "./screens/SummaryScreen";'와 같음)
+import 'package:provider/provider.dart'; // 1. Provider import
 import 'screens/summary_screen.dart';
+import 'providers/health_data_provider.dart'; // 2. 방금 만든 Provider import
 
 // 2. 앱의 시작점입니다. (index.tsx의 ReactDOM.render와 유사)
 void main() {
+  // 3. runApp()을 Provider로 감쌉니다.
+  //    이것이 React의 <MyContext.Provider>입니다.
   // 3. 'MyApp' 위젯(컴포넌트)을 실행하라는 명령입니다.
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      // 4. 'create'는 어떤 '상태 저장소'를 주입할지 알려줍니다.
+      create: (context) => HealthDataProvider(),
+      child: const MyApp(), // 5. 자식 위젯들 (MyApp 전체)
+    ),
+  );
 }
 
 // 4. 앱의 최상위 루트 위젯입니다. (App.tsx와 동일)
