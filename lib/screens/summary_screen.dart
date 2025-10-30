@@ -31,6 +31,14 @@ class SummaryScreen extends StatelessWidget {
         //    'healthProvider'는 provider의 상태, 'child'는 최적화용
         builder: (context, healthProvider, child) {
 
+          // 1. [핵심] Provider의 'isLoading' 상태를 확인합니다.
+          if (healthProvider.isLoading) {
+            // 2. 로딩 중이면, 화면 중앙에 스피너를 보여줍니다.
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+
         // 5. 이 builder 함수 안쪽만 리빌드됩니다!
           return GridView.builder(
             padding: const EdgeInsets.all(16.0),

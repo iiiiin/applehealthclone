@@ -4,16 +4,32 @@ import 'package:flutter/material.dart';
 //    이것이 React의 'useState'의 'set' 함수처럼 "알림" 기능을 합니다.
 class HealthDataProvider with ChangeNotifier {
   
-  // 2. SummaryScreen의 'State'에 있던 데이터를 그대로 가져옵니다.
-  //    'final'이 아닌 'private' 변수(_)로 바꿔서 외부 접근을 막습니다.
-  List<Map<String, dynamic>> _healthData = [];
+  // 1. [추가] 로딩 상태 변수. 기본값은 'true'(로딩 중)
+  bool _isLoading = true;
 
-  // 3. 외부에서 데이터를 '읽기'만 할 수 있는 getter를 만듭니다.
-  //    (React의 'selector'와 유사)
+  // 2. [추가] 로딩 상태를 외부에서 읽을 수 있는 getter
+  bool get isLoading => _isLoading;
+  
+  // 3. 데이터 변수는 빈 리스트로 초기화
+  List<Map<String, dynamic>> _healthData = [];
   List<Map<String, dynamic>> get healthData => _healthData;
 
   // 4. initState에서 하던 초기화 로직을 '생성자'로 옮깁니다.
   HealthDataProvider() {
+    // 생성자에서는 비동기 작업을 직접 기다릴 수 없으므로,
+    // 'fetchData'라는 별도 비동기 함수를 호출합니다.
+    _fetchData();
+  }
+
+  // 5. [추가] 데이터를 가져오는 비동기 함수 (가짜 API 호출)
+  Future<void> _fetchData() async {
+    // 6. (선택 사항) 혹시 모르니 로딩 시작을 알림. (이미 true지만 명시적)
+    _isLoading = true;
+    notifyListeners(); 
+
+    // 7. [핵심] 3초간 대기 (API 호출 시뮬레이션)
+    await Future.delayed(const Duration(seconds: 3));
+
     _healthData = [
       // ... (SummaryScreen의 initState에 있던 데이터 리스트 복사) ...
        {
@@ -60,6 +76,10 @@ class HealthDataProvider with ChangeNotifier {
         'color': Colors.lightBlue,
       },
     ];
+    // 9. [핵심] 데이터 로딩이 끝났으니 'isLoading'을 false로 변경
+    _isLoading = false;
+    // 10. "로딩 끝났고 데이터 준비됐어!"라고 구독자(Consumer)에게 알림
+    notifyListeners();
   }
 
   // 5. SummaryScreen에 있던 '추가' 메소드를 가져옵니다.
