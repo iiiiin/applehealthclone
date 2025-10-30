@@ -20,6 +20,9 @@ class HealthCategoryCard extends StatelessWidget {
   //    '?'는 null일 수도 있다는 의미 (선택적 prop)
   final VoidCallback? onDelete;
 
+  // 1. onTap 함수 prop을 추가합니다.
+  final VoidCallback? onTap;
+
   // 2. 생성자(constructor)를 수정합니다.
   // this.title은 React의 props.title과 같습니다.
   // {super.key} 뒤에 콤마(,)를 찍고 받아올 props를 정의합니다.
@@ -31,6 +34,7 @@ class HealthCategoryCard extends StatelessWidget {
     required this.icon,
     required this.iconColor,
     this.onDelete, // 2. 생성자에 'onDelete'를 추가합니다 (required 아님)
+    this.onTap, // 2. 생성자에 추가
   });
 
   @override
@@ -51,6 +55,9 @@ class HealthCategoryCard extends StatelessWidget {
         
         // 4. 'onLongPress' 이벤트에 'onDelete' prop을 연결합니다.
         onLongPress: onDelete,
+        // 3. onTap 이벤트를 연결합니다.
+        onTap: onTap,
+        
       child: Padding(
         padding: const EdgeInsets.all(16.0), // 카드 내부 여백
         

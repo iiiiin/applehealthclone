@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 //    (React에서 'import HealthCategoryCard from "../widgets/HealthCategoryCard";'와 같음)
 import '../widgets/health_category_card.dart';
 
+// 1. [중요] 새로 만든 DetailScreen을 import 합니다.
+import 'detail_screen.dart';
+
 // 8. '요약' 탭에 해당하는 실제 화면 위젯입니다.
 //    (지금은 한 파일에 있지만, 나중엔 별도 파일로 분리할 겁니다.)
 class SummaryScreen extends StatefulWidget {
@@ -119,6 +122,21 @@ class _SummaryScreenState extends State<SummaryScreen> {
             // 5. 꾹 눌렀을 때 실행될 함수를 전달합니다.
             //    React의 <Card onDelete={() => _deleteHealthData(index)} /> 와 동일.
             onDelete: () => _deleteHealthData(index),
+
+            // 4. [중요] onTap prop을 구현합니다.
+            onTap: () {
+              // 5. React Navigation의 navigation.navigate(...)와 같습니다.
+              Navigator.push(
+                context, // 현재 BuildContext(화면 위치)
+                // 6. '어떤 화면으로 이동할지' 정의 (Stack에 쌓을 화면)
+                MaterialPageRoute(
+                  builder: (context) => DetailScreen(
+                    // 7. DetailScreen에 'title' prop을 전달합니다.
+                    categoryTitle: data['title'],
+                  ),
+                )
+              );
+            },
           );
         },
       ),
