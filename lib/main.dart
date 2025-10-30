@@ -138,12 +138,16 @@ class _SummaryScreenState extends State<SummaryScreen> {
         itemBuilder: (BuildContext context, int index) {
           final data = healthData[index];
 
+          // 4. HealthCategoryCard에 'onDelete' prop을 새로 전달합니다.
           return HealthCategoryCard(
             title: data['title'],
             value: data['value'],
             time: data['time'],
             icon: data['icon'],
             iconColor: data['color'],
+            // 5. 꾹 눌렀을 때 실행될 함수를 전달합니다.
+            //    React의 <Card onDelete={() => _deleteHealthData(index)} /> 와 동일.
+            onDelete: () => _deleteHealthData(index),
           );
         },
       ),
@@ -173,6 +177,14 @@ class _SummaryScreenState extends State<SummaryScreen> {
       });
     });
   }
+  // 1. _addHealthData 메소드 아래에 '삭제' 메소드를 추가합니다.
+  void _deleteHealthData(int indexToDelete) {
+    // 2. setState()로 Flutter에게 상태 변경을 알립니다.
+    setState(() {
+      // 3. 'indexToDelete'에 해당하는 항목을 리스트에서 제거합니다.
+      healthData.removeAt(indexToDelete);
+    });
+  }
 }
 
 // 2단계: 각 그리드 셀에 들어갈 위젯을 분리합니다.
@@ -187,6 +199,12 @@ class HealthCategoryCard extends StatelessWidget {
   final IconData icon; // Icon 데이터를 직접 받습니다 (예: Icons.favorite)
   final Color iconColor;
 
+  // 1. 'onDelete' 함수 prop을 추가합니다.
+  //    'VoidCallback'은 '파라미터 없고 리턴값 없는 함수'를 의미합니다.
+  //    (React의 '() => void' 타입과 같음)
+  //    '?'는 null일 수도 있다는 의미 (선택적 prop)
+  final VoidCallback? onDelete;
+
   // 2. 생성자(constructor)를 수정합니다.
   // this.title은 React의 props.title과 같습니다.
   // {super.key} 뒤에 콤마(,)를 찍고 받아올 props를 정의합니다.
@@ -197,6 +215,7 @@ class HealthCategoryCard extends StatelessWidget {
     required this.time,
     required this.icon,
     required this.iconColor,
+    this.onDelete, // 2. 생성자에 'onDelete'를 추가합니다 (required 아님)
   });
 
   @override
@@ -208,6 +227,15 @@ class HealthCategoryCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12.0), // 모서리 둥글기
       ),
+      // 3. Card의 자식(child)을 'InkWell' 위젯으로 감쌉니다.
+      //    'InkWell'은 'onTap', 'onLongPress' 등을 감지하고 
+      //    물결 효과(ripple effect)를 줍니다.
+      //    (React Native의 <TouchableOpacity>와 비슷)
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12.0), // 물결 효과가 Card 모양과 맞도록
+        
+        // 4. 'onLongPress' 이벤트에 'onDelete' prop을 연결합니다.
+        onLongPress: onDelete,
       child: Padding(
         padding: const EdgeInsets.all(16.0), // 카드 내부 여백
         
@@ -253,6 +281,7 @@ class HealthCategoryCard extends StatelessWidget {
           ],
         ),
       ),
+    )
     );
   }
 }
