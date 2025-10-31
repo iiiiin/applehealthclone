@@ -30,6 +30,24 @@ class SummaryScreen extends StatelessWidget {
         // 4. 'builder'는 React의 'Render Prop'과 같습니다.
         //    'healthProvider'는 provider의 상태, 'child'는 최적화용
         builder: (context, healthProvider, child) {
+          
+          // 1. [추가] 에러 상태를 가장 먼저 확인
+          if (healthProvider.error != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.red, size: 50),
+                  const SizedBox(height: 16),
+                  Text(
+                    '데이터 로딩 실패',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  Text(healthProvider.error!), // Provider에서 받은 에러 메시지
+                ],
+              ),
+            );
+          }
 
           // 1. [핵심] Provider의 'isLoading' 상태를 확인합니다.
           if (healthProvider.isLoading) {
