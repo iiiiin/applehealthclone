@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:health/health.dart';
+import 'package:http/http.dart' as http; // 1. [추가] http 패키지 import
+import 'dart:convert';                  // 2. [추가] JSON 파싱을 위한 import
 
 // 1. 'ChangeNotifier'를 import 합니다. (Provider의 핵심)
 //    이것이 React의 'useState'의 'set' 함수처럼 "알림" 기능을 합니다.
@@ -26,6 +29,14 @@ class HealthDataProvider with ChangeNotifier {
     _fetchData();
   }
 
+   // 1. [추가] 안전하게 문자열을 자르는 헬퍼 함수
+  String _safeSubstring(String text, int length) {
+    if (text.length < length) {
+      return text; // ⬅️ 길이가 짧으면, 그냥 원본을 반환
+    }
+    return text.substring(0, length); // ⬅️ 길이가 길 때만 자름
+  }
+   
   // 5. [추가] 데이터를 가져오는 비동기 함수 (가짜 API 호출)
   Future<void> _fetchData() async {
     // 6. (선택 사항) 혹시 모르니 로딩 시작을 알림. (이미 true지만 명시적)
@@ -34,61 +45,32 @@ class HealthDataProvider with ChangeNotifier {
     notifyListeners(); 
 
     try {
-      // 7. [핵심] 3초간 대기 (API 호출 시뮬레이션)
-      await Future.delayed(const Duration(seconds: 3));
+      // 3. [수정] HealthKit 권한 요청 대신 API URL로 GET 요청
+      final url = Uri.parse('https://jsonplaceholder.typicode.com/posts?_limit=6');
+      final response = await http.get(url).timeout(const Duration(seconds: 5));
 
-      // 5. [수정] 3초 후, 데이터 로드 대신 고의로 에러 발생!
-      // throw Exception('인터넷 연결이 끊겼습니다. (시뮬레이션)');
+      // 4. [수M] API 응답 확인
+      if (response.statusCode == 200) {
+        // 5. [추가] String 응답을 JSON(List<dynamic>)으로 파싱
+        final List<dynamic> jsonData = jsonDecode(response.body);
 
-      _healthData = [
-      // ... (SummaryScreen의 initState에 있던 데이터 리스트 복사) ...
-       {
-        'title': '심박수',
-        'value': '75 BPM',
-        'time': '방금 전',
-        'icon': Icons.favorite,
-        'color': Colors.red,
-      },
-      // ... (나머지 데이터 5개도 여기에 복사) ...
-       {
-        'title': '걸음',
-        'value': '4,820',
-        'time': '오늘',
-        'icon': Icons.directions_walk,
-        'color': Colors.orange,
-      },
-      {
-        'title': '수면',
-        'value': '6시간 45분',
-        'time': '어젯밤',
-        'icon': Icons.nightlight_round,
-        'color': Colors.purple,
-      },
-      {
-        'title': '체중',
-        'value': '70.5 kg',
-        'time': '오전 8:00',
-        'icon': Icons.monitor_weight,
-        'color': Colors.blue,
-      },
-      {
-        'title': '활동 에너지',
-        'value': '350 kcal',
-        'time': '오늘',
-        'icon': Icons.local_fire_department,
-        'color': Colors.redAccent,
-      },
-      {
-        'title': '물',
-        'value': '1.2 L',
-        'time': '오늘',
-        'icon': Icons.water_drop,
-        'color': Colors.lightBlue,
-      },
-    ];
+      // 6. [수정] JSON 데이터를 우리 앱의 Map 구조로 변환
+        _healthData = jsonData.map((post) {
+          // JSONPlaceholder의 'title'과 'body'를 우리 앱의 'title'과 'value'로 매핑
+          return {
+            'title': _safeSubstring(post['title'].toString(), 15),
+            'value': _safeSubstring(post['body'].toString(), 20),
+            'time': 'API 수신',
+            'icon': Icons.http, // 아이콘 변경
+            'color': Colors.deepPurple,
+          };
+        }).toList(); // List<Map<...>>로 변환
 
       _isLoading = false;
-            
+      } else {
+        // 7. [수정] 서버가 에러 코드를 보낸 경우
+        throw Exception('API 서버 에러: ${response.statusCode}');
+      }
     } catch (e) {
       // 7. [추가] 에러가 잡혔을 때 실행
       _isLoading = false; // 로딩은 끝났고
