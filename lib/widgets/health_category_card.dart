@@ -39,8 +39,8 @@ class HealthCategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Card 위젯은 RN의 <View style={{ shadow... }}>와 비슷합니다.
-    // 적당한 그림자와 둥근 모서리를 제공합니다.
+    // 1. [추가] build 메소드 상단에서 현재 테마를 가져옵니다.
+    final textTheme = Theme.of(context).textTheme;
     return Card(
       elevation: 2.0, // 그림자 농도
       shape: RoundedRectangleBorder(
@@ -79,24 +79,15 @@ class HealthCategoryCard extends StatelessWidget {
               children: [
                 Text(
                   title, // '심박수' 대신 props.title
-                  style: const TextStyle( // Text도 const 가능
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16.0,
-                  ),
+                  style: textTheme.titleMedium,
                 ),
                 Text(
                   value, // '75 BPM' 대신 props.value
-                  style: const TextStyle( // Text도 const 가능
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.w900,
-                  ),
+                  style: textTheme.headlineSmall,
                 ),
                 Text(
                   time, // '방금 전' 대신 props.time
-                  style: const TextStyle( // Text도 const 가능
-                    color: Colors.grey,
-                    fontSize: 14.0,
-                  ),
+                  style: textTheme.bodySmall,
                 ),
               ],
             ),

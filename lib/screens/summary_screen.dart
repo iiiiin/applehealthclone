@@ -20,8 +20,7 @@ class SummaryScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('요약 (Optimized)'), // (제목 변경해서 확인)
-        backgroundColor: Colors.grey[100],
+        title: const Text('요약'), // (제목 변경해서 확인)
         // 2. AppBar는 이제 절대 리빌드되지 않습니다! (const 아님에도)
       ),
       // 3. [핵심] GridView.builder를 'Consumer' 위젯으로 감쌉니다.

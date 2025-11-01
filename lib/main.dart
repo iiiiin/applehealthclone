@@ -33,12 +33,41 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       // (지금은 이 2개만 알면 됩니다)
       title: 'Apple Health Clone',
+      // 1. [핵심] 'theme' 속성을 확장합니다.
       theme: ThemeData(
-        // 앱의 기본 색상 테마를 설정합니다.
+        // 2. 앱의 기본 색상 견본 (Swatch)
+        //    이걸 'blue'로 설정하면 버튼, 스피너 등이 자동으로 파란색이 됩니다.
         primarySwatch: Colors.blue,
+
+        // 3. AppBar, Scaffold 등 전역 배경색 지정
+        scaffoldBackgroundColor: Colors.grey[50], // 약간의 회색 배경
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.grey[50], // AppBar 배경도 통일
+          foregroundColor: Colors.black, // AppBar 글자색 (기본은 흰색)
+          elevation: 0, // AppBar 그림자 제거
+        ),
+        
+        // 4. [중요] 전역 텍스트 스타일 정의
+        textTheme: const TextTheme(
+          // '걸음', '수면' 같은 카드 제목용
+          titleMedium: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16.0,
+            color: Colors.black87,
+          ),
+          // '4,820', '75 BPM' 같은 큰 값 표시용
+          headlineSmall: TextStyle(
+            fontSize: 20.0,
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+          ),
+          // '오늘', '방금 전' 같은 작은 시간 표시용
+          bodySmall: TextStyle(
+            color: Colors.grey,
+            fontSize: 14.0,
+          ),
+        ),
       ),
-      // 7. 앱이 처음 켜졌을 때 보여줄 '홈' 화면입니다.
-      //    'SummaryScreen'이라는 위젯을 홈으로 지정합니다.
       home: const SummaryScreen(),
     );
   }
